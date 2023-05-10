@@ -33,7 +33,7 @@ Console.WriteLine(MaxSlidingWindow(new int[] { 9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-
 static int[] MaxSlidingWindow(int[] nums, int k)
 {
     var result = new int[nums.Length - k + 1];
-    int maxIndex = -1;
+    var maxIndex = -1;
 
     for (var i = 0; i <= nums.Length - k; i++)
     {
