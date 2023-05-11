@@ -28,33 +28,91 @@ LeetCode link: https://leetcode.com/problems/sliding-window-maximum/
 
 #region Solution
 
-//Console.WriteLine(MaxSlidingWindow(new int[] { 1, 3, -1, -3, 5, 3, 6, 7 }, 3));
-Console.WriteLine(MaxSlidingWindow(new int[] { 9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5 }, 6));
+Console.WriteLine(MaxSlidingWindow(new int[] { 1, 3, 1, 2, 0, 5 }, 3));
+//Console.WriteLine(MaxSlidingWindow(new int[] { 9,8,7,6,5,4,3,2,1,0,-1,-2,-3,-4,-5 }, 6));
 static int[] MaxSlidingWindow(int[] nums, int k)
 {
+    var myLinkedList = new MyLinkedList();
     var result = new int[nums.Length - k + 1];
-    var maxIndex = -1;
 
-    for (var i = 0; i <= nums.Length - k; i++)
+    for (int i = 0; i < nums.Length; i++)
     {
-        if (maxIndex < i)
+        while (myLinkedList.Count > 0 && nums[myLinkedList.GetLast()] < nums[i])
         {
-            var substring = nums[i..(i + k)];
-            (result[i], maxIndex) = substring.Select((n, i) => (n, i)).Max();
-            maxIndex += i;
+            myLinkedList.RemoveLast();
         }
-        else if (result[i - 1] > nums[i + k -1])
+
+        if (myLinkedList.Count > 0 && myLinkedList.GetFirst() == i - k)
         {
-            result[i] = result[i - 1];
+            myLinkedList.RemoveFirst();
+        }
+
+        myLinkedList.Add(i);
+
+        if (i < k - 1)
+        {
+            continue;
+        }
+
+        result[i - k + 1] = nums[myLinkedList.GetFirst()];
+    }
+    return result;
+}
+
+class MyLinkedList
+{
+    public MyNode Head { get; set; } = new MyNode();
+    public MyNode Tail { get; set; } = new MyNode();
+    public int Count { get; private set; } = 0;
+
+    public int GetFirst()
+    {
+        return Head.Value;
+    }
+    public int GetLast()
+    {
+        return Tail.Value;
+    }
+
+    public void RemoveFirst()
+    {
+        Head = Head.Next ?? new MyNode();
+        Count--;
+    }
+
+    public void RemoveLast()
+    {
+        Tail = Tail.Previous ?? new MyNode();
+        Count--;
+    }
+
+    public void Add(int value)
+    {
+        var myNode = new MyNode
+        {
+            Value = value
+        };
+
+        if (Count == 0)
+        {
+            Head = myNode;
+            Tail = myNode;
         }
         else
         {
-            result[i] = nums[i + k - 1];
-            maxIndex = i + k - 1;
+            myNode.Previous = Tail;
+            Tail.Next = myNode;
+            Tail = myNode;
         }
+        Count++;
     }
+}
 
-    return result;
+class MyNode
+{
+    public int Value { get; set; }
+    public MyNode? Previous { get; set; }
+    public MyNode? Next { get; set; }
 }
 
 #endregion
